@@ -51,7 +51,7 @@ func (r *repository) CreateTransaction(transactions models.Transaction) (models.
 // Create UpdateTransaction method here ...
 func (r *repository) UpdateTransaction(status string, ID string) error {
 	var transaction models.Transaction
-	r.db.Preload("Product").First(&transaction, ID)
+	r.db.Debug().Preload("Product").First(&transaction, ID)
 
 	// If is different & Status is "success" decrement product quantity
 	if status != transaction.Status && status == "success" {
