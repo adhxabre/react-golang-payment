@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import convertRupiah from "rupiah-format";
 
 import Navbar from "../components/Navbar";
 
-import dataProduct from "../fakeData/product";
+// import dataProduct from "../fakeData/product";
 
 // Import useQuery and useMutation
 import { useQuery, useMutation } from "react-query";
@@ -35,7 +35,7 @@ export default function DetailProduct() {
     //change this to the script source you want to load, for example this is snap.js sandbox env
     const midtransScriptUrl = "https://app.sandbox.midtrans.com/snap/snap.js";
     //change this according to your client-key
-    const myMidtransClientKey = "Client key here ...";
+    const myMidtransClientKey = "SB-Mid-client-A3OQbgr_e6AlRfQc";
   
     let scriptTag = document.createElement("script");
     scriptTag.src = midtransScriptUrl;
@@ -53,8 +53,8 @@ export default function DetailProduct() {
     try {
       // Get data from product
       const data = {
-        idProduct: product.id,
-        idSeller: product.user.id,
+        productId: product.id,
+        sellerId: product.user.id,
         price: product.price,
       };
 
