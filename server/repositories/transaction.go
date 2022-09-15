@@ -10,8 +10,10 @@ type TransactionRepository interface {
 	FindTransactions(ID int) ([]models.Transaction, error)
 	GetTransaction(ID int) (models.Transaction, error)
 	// Declare GetOneTransaction repository method here ...
+	GetOneTransaction(ID string) (models.Transaction, error)
 	CreateTransaction(transactions models.Transaction) (models.Transaction, error)
 	// Declare UpdateTransaction repository method here ...
+	UpdateTransaction(status string, ID string) error
 }
 
 func RepositoryTransaction(db *gorm.DB) *repository {
@@ -33,6 +35,12 @@ func (r *repository) GetTransaction(ID int) (models.Transaction, error) {
 }
 
 // Create GetOneTransaction method here ...
+func (r *repository) GetOneTransaction(ID string) (models.Transaction, error) {
+	var transaction models.Transaction
+	err := r.db.Preload("Product").Preload("Product.User").Preload("Buyer").Preload("Seller").First(&transaction, "id = ?", ID).Error
+
+	return transaction, err
+}
 
 func (r *repository) CreateTransaction(transactions models.Transaction) (models.Transaction, error) {
 	err := r.db.Preload("Product").Preload("Product.User").Preload("Buyer").Preload("Seller").Create(&transactions).Error
@@ -41,3 +49,21 @@ func (r *repository) CreateTransaction(transactions models.Transaction) (models.
 }
 
 // Create UpdateTransaction method here ...
+func (r *repository) UpdateTransaction(status string, ID string) error {
+	var transaction models.Transaction
+	r.db.Preload("Product").First(&transaction, ID)
+
+	// If is different & Status is "success" decrement product quantity
+	if status != transaction.Status && status == "success" {
+		var product models.Product
+		r.db.First(&product, transaction.Product.ID)
+		product.Qty = product.Qty - 1
+		r.db.Save(&product)
+	}
+
+	transaction.Status = status
+
+	err := r.db.Save(&transaction).Error
+
+	return err
+}
